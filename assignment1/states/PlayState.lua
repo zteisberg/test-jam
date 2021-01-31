@@ -135,6 +135,7 @@ function PlayState:render()
     love.graphics.print('Score: ' .. tostring(self.score), 8, 8)
 
     self.bird:render()
+    self.maze:render()
 	self.prize:render()
 end
 
@@ -153,7 +154,8 @@ function PlayState:enter(saved)
 		self.interval = saved.interval
 		self.lastY = saved.lastY
 		self.prize = saved.prize
-	else
+    else
+        self.maze = Maze(33, 33, 5)
 		self.bird = Bird()
 		self.pipePairs = {}
 		self.timer = 0

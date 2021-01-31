@@ -44,6 +44,7 @@ require 'Bird'
 require 'Pipe'
 require 'PipePair'
 require 'Achievements'
+require 'Maze'
 
 -- physical screen dimensions
 WINDOW_WIDTH = 1280
