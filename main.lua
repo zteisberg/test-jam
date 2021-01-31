@@ -11,9 +11,9 @@ local COS90 = {1,0,-1,0}
 
 local fullscreen = false
 local landscape  = true
+local windowPosX, windowPosY = nil, nil
 local windowWidth,  windowHeight  = 1,1
 local virtualWidth, virtualHeight = 1,1
-local screenPosX, screenPosY = nil, nil
 local aspectRatio = 1.5
 local flagScreenResized = false
 
@@ -22,11 +22,17 @@ local turnCounter = 0
 local turnDuration = 30
 local turnDir = 180
 
-local globalPosX,    globalPosY    = 0, 0
-local globalScrollX, globalScrollY = 0, 0
-local globalScrollSpeed = 5
-local grass = love.graphics.newImage('assets/grass.png')
-local grassWidth, grassHeight = grass:getDimensions()
+local grass = {
+    love.graphics.newImage('assets/grass0.png'),
+    love.graphics.newImage('assets/grass1.png'),
+    love.graphics.newImage('assets/grass2.png'),
+    love.graphics.newImage('assets/grass3.png')
+}
+local grassWidth, grassHeight = grass[1]:getDimensions()
+
+globalPosX,    globalPosY    = 0, 0
+globalScrollX, globalScrollY = 0, 0
+globalScrollSpeed = 5
 
 
 function love.load()
@@ -36,7 +42,7 @@ function love.load()
     end
     
     initScreen()
-    screenPosX, screenPosY = love.window.getPosition()
+    windowPosX, windowPosY = love.window.getPosition()
     love.window.setTitle('Project Pizza')
     love.graphics.setDefaultFilter('nearest','nearest')
 end
@@ -44,10 +50,6 @@ end
 function love.update(dt)
     globalPosX = globalPosX + globalScrollX
     globalPosY = globalPosY + globalScrollY
-    
-    print(turning)
-    print(globalScrollX)
-    print(globalScrollY)
 
     if turning then
         local dx = 2*globalScrollSpeed/turnDuration
@@ -57,8 +59,8 @@ function love.update(dt)
             globalScrollY = globalScrollY - sign(globalScrollY)*dx
         elseif turnCounter <= turnDuration then
             local index = math.floor(turnDir/90)
-            globalScrollX = globalScrollX + SIN90[index+1]*dx
-            globalScrollY = globalScrollY - COS90[index+1]*dx
+            globalScrollX = globalScrollX - SIN90[index+1]*dx
+            globalScrollY = globalScrollY + COS90[index+1]*dx
         else
             globalScrollX = math.floor(globalScrollX+0.5)
             globalScrollY = math.floor(globalScrollY+0.5)
@@ -72,9 +74,13 @@ end
 function love.draw()
     push:start()
 
-    for y = globalPosY % grassHeight - grassHeight, virtualHeight, grassHeight do
-    for x = globalPosX % grassWidth  - grassWidth,  virtualWidth,  grassWidth do
-        love.graphics.draw(grass,x,y)
+    for y = -(globalPosY % grassHeight), virtualHeight*2, grassHeight do
+    for x = -(globalPosX % grassWidth),  virtualWidth*2,  grassWidth do
+        local ref = (globalPosX+x+(globalPosY+y)*21)/grassWidth
+        local rot = crc32:hash(ref)%4*math.pi/2
+        local flip = crc32:hash(ref+1)%2 == 0 and 1 or -1
+        local index = crc32:hash(ref+2)%4+1
+        love.graphics.draw(grass[index],x,y,rot,flip,1,grassWidth/2,grassHeight/2)
     end end
     push:finish()
 end
@@ -88,7 +94,7 @@ end
 function love.mousefocus()
     if flagScreenResized then
         initScreen()
-        love.window.setPosition(screenPosX, screenPosY)
+        love.window.setPosition(windowPosX, windowPosY)
         flagScreenResized = false
     end
 end
@@ -96,7 +102,7 @@ end
 function love.keypressed(key)
     if flagScreenResized then
         initScreen()
-        love.window.setPosition(screenPosX, screenPosY)
+        love.window.setPosition(windowPosX, windowPosY)
         flagScreenResized = false
     end
 
