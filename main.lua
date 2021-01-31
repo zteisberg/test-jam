@@ -19,7 +19,7 @@ local flagScreenResized = false
 
 local turning = true
 local turnCounter = 0
-local turnDuration = 30
+local turnDuration = 50
 local turnDir = 180
 
 local grass = {
@@ -33,9 +33,9 @@ local grass = {
 }
 local grassWidth, grassHeight = grass[1]:getDimensions()
 
-globalPosX,    globalPosY    = 0, 0
+globalPosX, globalPosY = 0, 0
 globalScrollX, globalScrollY = 0, 0
-globalScrollSpeed = 5
+globalScrollSpeed = 450
 
 
 function love.load()
@@ -51,8 +51,8 @@ function love.load()
 end
 
 function love.update(dt)
-    globalPosX = globalPosX + globalScrollX
-    globalPosY = globalPosY + globalScrollY
+    globalPosX = globalPosX + globalScrollX * dt
+    globalPosY = globalPosY + globalScrollY * dt
 
     if turning then
         local dx = 2*globalScrollSpeed/turnDuration
