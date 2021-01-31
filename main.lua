@@ -3,7 +3,7 @@ require 'src/Dependencies'
 local OS = love.system.getOS()
 local MOBILE = (OS == 'Android' or OS == 'iOS') and true or false
 local SCREEN_WIDTH, SCREEN_HEIGHT = love.window.getDesktopDimensions()
-local PC_DEFAULT_WIDTH, PC_DEFAULT_HEIGHT = 1280, 720
+local PC_DEFAULT_WIDTH, PC_DEFAULT_HEIGHT = 540,900
 local MIN_RENDER_WIDTH, MIN_RENDER_HEIGHT = 512, 288
 local MAX_RENDER_WIDTH, MAX_RENDER_HEIGHT = 720, 480
 local SIN90 = {0,1,0,-1}
@@ -26,7 +26,10 @@ local grass = {
     love.graphics.newImage('assets/grass0.png'),
     love.graphics.newImage('assets/grass1.png'),
     love.graphics.newImage('assets/grass2.png'),
-    love.graphics.newImage('assets/grass3.png')
+    love.graphics.newImage('assets/grass3.png'),
+    love.graphics.newImage('assets/grass4.png'),
+    love.graphics.newImage('assets/grass5.png'),
+    love.graphics.newImage('assets/grass6.png'),
 }
 local grassWidth, grassHeight = grass[1]:getDimensions()
 
@@ -74,13 +77,14 @@ end
 function love.draw()
     push:start()
 
-    for y = -(globalPosY % grassHeight), virtualHeight*2, grassHeight do
-    for x = -(globalPosX % grassWidth),  virtualWidth*2,  grassWidth do
-        local ref = (globalPosX+x+(globalPosY+y)*21)/grassWidth
-        local rot = crc32:hash(ref)%4*math.pi/2
-        local flip = crc32:hash(ref+1)%2 == 0 and 1 or -1
-        local index = crc32:hash(ref+2)%4+1
-        love.graphics.draw(grass[index],x,y,rot,flip,1,grassWidth/2,grassHeight/2)
+    for y = -(globalPosY % grassHeight), virtualHeight+grassHeight, grassHeight do
+    for x = -(globalPosX % grassWidth),  virtualWidth +grassWidth,  grassWidth do
+        local hashval = (globalPosX+x+(globalPosY+y)*25)/grassWidth
+        local rot = crc32:hash(hashval)%4*math.pi/2
+        local flipx = crc32:hash(hashval+1)%2 == 0 and 1 or -1
+        local flipy = crc32:hash(hashval+2)%2 == 0 and 1 or -1
+        local index = crc32:hash(hashval+3)%7+1
+        love.graphics.draw(grass[index],x,y,rot,flipx,flipy,grassWidth/2,grassHeight/2)
     end end
     push:finish()
 end
