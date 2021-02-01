@@ -69,7 +69,7 @@ end
 
 function love.draw()
     push:start()
-    bg.testRender()
+    bg.render()
     push:finish()
 end
 
