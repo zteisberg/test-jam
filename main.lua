@@ -38,13 +38,7 @@ function love.load()
     love.window.setTitle('Project Pizza')
     love.graphics.setDefaultFilter('nearest','nearest')
 
-    textures = {
-        ['grass'] = love.graphics.newImage('assets/grass.png')
-    }
-
-    tiles = {
-        ['grass'] = ExtractSprites(textures['grass'],64,64)
-    }
+    LoadSprites()
 
     bg = Background()
 end
@@ -75,7 +69,7 @@ end
 
 function love.draw()
     push:start()
-    bg.render()
+    bg.testRender()
     push:finish()
 end
 
