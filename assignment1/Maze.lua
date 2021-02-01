@@ -6,7 +6,7 @@ function Maze:init(width, height, thickness)
     self.height = height
     self.thickness = thickness
     self.maze = init_maze(width, height)
-    carve_maze(self.maze, width, height, 2, 2)
+    carve_maze(self.maze, width, height, 2, 2, 0)
     self.maze[width + 2] = 0
     self.maze[(height - 2) * width + width - 3] = 0
     maze_canvas = love.graphics.newCanvas(width*thickness, height*thickness)
@@ -42,8 +42,9 @@ function init_maze(width, height)
  end
  
  -- Carve the maze starting at x, y.
- function carve_maze(maze, width, height, x, y)
+ function carve_maze(maze, width, height, x, y, double_direction)
     local r = math.random(0, 3)
+    local double_direction = math.max(math.random(1, 2), double_direction)
     maze[y * width + x] = 0
     for i = 0, 3 do
        local d = (i + r) % 4
@@ -64,8 +65,11 @@ function init_maze(width, height)
        local ny2 = ny + dy
        if maze[ny * width + nx] == 1 then
           if maze[ny2 * width + nx2] == 1 then
-             maze[ny * width + nx] = 0
-             carve_maze(maze, width, height, nx2, ny2)
+            maze[ny * width + nx] = 0
+             if double_direction == 1 then
+                carve_maze(maze, width, height, x, y, 2)
+             end
+             carve_maze(maze, width, height, nx2, ny2, 0)
           end
        end
     end
