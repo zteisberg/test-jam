@@ -13,7 +13,6 @@ local fullscreen = false
 local landscape  = true
 local windowPosX, windowPosY = nil, nil
 local windowWidth,  windowHeight  = 1,1
-local virtualWidth, virtualHeight = 1,1
 local aspectRatio = 1.5
 local flagScreenResized = false
 
@@ -22,17 +21,7 @@ local turnCounter = 0
 local turnDuration = 50
 local turnDir = 180
 
-local grass = {
-    love.graphics.newImage('assets/grass0.png'),
-    love.graphics.newImage('assets/grass1.png'),
-    love.graphics.newImage('assets/grass2.png'),
-    love.graphics.newImage('assets/grass3.png'),
-    love.graphics.newImage('assets/grass4.png'),
-    love.graphics.newImage('assets/grass5.png'),
-    love.graphics.newImage('assets/grass6.png'),
-}
-local grassWidth, grassHeight = grass[1]:getDimensions()
-
+virtualWidth, virtualHeight = 1,1
 globalPosX, globalPosY = 0, 0
 globalScrollX, globalScrollY = 0, 0
 globalScrollSpeed = 450
@@ -48,6 +37,16 @@ function love.load()
     windowPosX, windowPosY = love.window.getPosition()
     love.window.setTitle('Project Pizza')
     love.graphics.setDefaultFilter('nearest','nearest')
+
+    textures = {
+        ['grass'] = love.graphics.newImage('assets/grass.png')
+    }
+
+    tiles = {
+        ['grass'] = ExtractSprites(textures['grass'],64,64)
+    }
+
+    bg = Background()
 end
 
 function love.update(dt)
@@ -76,16 +75,7 @@ end
 
 function love.draw()
     push:start()
-
-    for y = -(globalPosY % grassHeight), virtualHeight+grassHeight, grassHeight do
-    for x = -(globalPosX % grassWidth),  virtualWidth +grassWidth,  grassWidth do
-        local hashval = (globalPosX+x+(globalPosY+y)*25)/grassWidth
-        local rot = crc32:hash(hashval)%4*math.pi/2
-        local flipx = crc32:hash(hashval+1)%2 == 0 and 1 or -1
-        local flipy = crc32:hash(hashval+2)%2 == 0 and 1 or -1
-        local index = crc32:hash(hashval+3)%7+1
-        love.graphics.draw(grass[index],x,y,rot,flipx,flipy,grassWidth/2,grassHeight/2)
-    end end
+    bg.render()
     push:finish()
 end
 
